@@ -144,3 +144,89 @@ from confirmed causes, and recommend actionable checks.
         "ai_investigation": ai_report,
         "investigation_time_seconds": investigation_time,
     }
+
+
+@router.post("/real-user-incident")
+def investigate_real_user_incident(
+    request: RealUserIncidentRequest,
+    db: Session = Depends(get_db),
+):
+    incident = db.get(Incident, request.incident_id)
+
+    if incident is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Incident not found",
+        )
+
+    log_lines = [
+        record.log_line
+        for record in sorted(
+            incident.logs,
+            key=lambda item: item.line_number,
+        )
+    ]
+
+    entered_username = None
+
+    for line in log_lines:
+        try:
+            parsed = json.loads(line)
+        except (json.JSONDecodeError, TypeError):
+            continue
+
+        records = parsed if isinstance(parsed, list) else [parsed]
+
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+
+            message = record.get("@message", {})
+            if isinstance(message, dict):
+                if message.get("message") == "Invalid credentials":
+                    entered_username = message.get("request_name")
+                    break
+
+        if entered_username:
+            break
+
+    if not entered_username:
+        raise HTTPException(
+            status_code=404,
+            detail="Login failure or entered username not found in incident logs",
+        )
+
+    registered_username = get_registered_username(request.email)
+
+    if not registered_username:
+        finding = "The supplied email was not found in the user database."
+        suggested_action = "Verify the registered email address."
+        username_match = False
+    else:
+        username_match = (
+            entered_username.casefold()
+            == registered_username.casefold()
+        )
+
+        if username_match:
+            finding = "The entered username matches the registered username."
+            suggested_action = (
+                "Investigate password validity and other authentication conditions."
+            )
+        else:
+            finding = "The entered username does not match the registered username."
+            suggested_action = (
+                f"Ask the user to sign in using the registered username: "
+                f"{registered_username}."
+            )
+
+    return {
+        "incident_id": request.incident_id,
+        "category": request.category,
+        "email": request.email,
+        "entered_username": entered_username,
+        "registered_username": registered_username,
+        "username_match": username_match,
+        "finding": finding,
+        "suggested_action": suggested_action,
+    }
