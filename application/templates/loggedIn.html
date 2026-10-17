@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Starcourt | Shop</title>
+  <link rel="stylesheet" href="../static/loggedIn.css">
+</head>
+{% with messages = get_flashed_messages() %}
+  {% for message in messages %}
+    <div class="flash-message">
+      {{ message }}
+    </div>
+  {% endfor %}
+{% endwith %}
+<body>
+  <!-- Navigation -->
+  <header class="site-header">
+    <nav class="navbar">
+      <a class="brand" href="{{ url_for('loggedIn') }}">
+        <span class="brand-star">★</span>
+        <span>Starcourt</span>
+      </a>
+
+      <div class="nav-links">
+        <div class="dropdown">
+          <button class="nav-button dropdown-button" type="button">
+            Products <span class="chevron">⌄</span>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#fruits">Fruits</a>
+            <a href="#vegetables">Vegetables</a>
+          </div>
+        </div>
+
+        <a class="nav-button" href="{{url_for('myOrders')}}">My Orders</a>
+
+        <div class="dropdown user-dropdown">
+  <button class="nav-button dropdown-button" type="button">
+    Hi, {{ username[:3] }} <span class="chevron">⌄</span>
+  </button>
+
+  <div class="dropdown-menu">
+    <a href="{{ url_for('logout') }}">Logout</a>
+  </div>
+</div>
+
+        <a class="cart-button" href="{{url_for('cart')}}">
+          <span class="cart-icon">🛒</span>
+          Cart
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Hero / About -->
+    <section class="hero">
+      <div class="hero-image-wrap">
+        <!-- Replace the src with your Starcourt image filename if needed -->
+        <img
+          src="../static/SLogo.png"
+          alt="Starcourt logo"
+          class="hero-logo"
+        >
+      </div>
+
+      <div class="hero-content">
+        <p class="eyebrow">RELIABILITY • RESILIENCE • OBSERVABILITY</p>
+        <h1>Reliability starts with <span>clever choices in the backend.</span></h1>
+        <p>
+            <strong>Starcourt</strong> is a practice e-commerce website hosted on Amazon Web Services (AWS), integrated with RESTful APIs in the backend to handle user authentication, product management, shopping cart operations, and order processing. Deployments are automated through <strong>CI/CD pipelines</strong>, with an integrated <strong>alerting system</strong> for service and application issues. It also features an AI-powered agent, <strong>STAR AGENT</strong>, designed for proactive service monitoring and intelligent alert analysis.
+        </p>
+        <a href="#products" class="primary-button">Explore products</a>
+      </div>
+    </section>
+
+    <!-- Auto-sliding banner -->
+    <section class="showcase" aria-label="Starcourt highlights">
+      <div class="slider-track">
+        <article class="slide slide-one">
+          <div>
+            <p class="slide-label">SEASONAL PICK</p>
+            <h2>Freshness for every table.</h2>
+            <p>Discover colorful fruits selected for everyday goodness.</p>
+          </div>
+        </article>
+
+        <article class="slide slide-two">
+          <div>
+            <p class="slide-label">FARM FRESH</p>
+            <h2>Bring home the good stuff.</h2>
+            <p>Crisp vegetables and wholesome ingredients for your kitchen.</p>
+          </div>
+        </article>
+
+        <article class="slide slide-three">
+          <div>
+            <p class="slide-label">STARCOURT ESSENTIALS</p>
+            <h2>Simple shopping. Better choices.</h2>
+            <p>Fresh produce, clear prices and a smooth shopping experience.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="slider-dots" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+    </section>
+
+    <!-- Products -->
+    <section class="products-section" id="products">
+      <div class="section-heading">
+        <p class="eyebrow">OUR PICKS</p>
+        <h2>Fresh from Starcourt</h2>
+        <p>Everyday fruits and vegetables, ready for your basket.</p>
+      </div>
+
+      <!-- Fruits -->
+      <div class="category-heading" id="fruits">
+        <h3>Fruits</h3>
+        <span>Fresh & naturally delicious</span>
+      </div>
+
+      <div class="product-grid">
+
+  {% for product in products %}
+  <article class="product-card">
+
+    <div class="product-image">
+      <img src="{{ product.image_url }}" alt="{{ product.name }}">
+    </div>
+
+    <div class="product-info">
+      <p class="product-category">{{ product.category }}</p>
+
+      <h4>{{ product.name }}</h4>
+
+      <div class="product-bottom">
+        <strong>₹{{ product.price }} / {{ product.unit }}</strong>
+        <form action="{{ url_for('addToCart') }}" method="POST">
+    <input type="hidden" name="product_id" value="{{ product.id }}">
+    <button type="submit">Add to cart</button>
+</form>
+      </div>
+
+    </div>
+
+  </article>
+  {% endfor %}
+
+</div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>★ Starcourt</span>
+    <span>Fresh choices, simply delivered.</span>
+  </footer>
+  <script>
+  setTimeout(function() {
+    const flash = document.querySelector(".flash-message");
+
+    if (flash) {
+      flash.remove();
+    }
+  }, 2000);
+</script>
+</body>
+</html>

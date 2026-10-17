@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Cart</title>
+    <link rel="stylesheet" href="../static/cart.css">
+</head>
+
+<body>
+
+    <header class="cart-header">
+        <a class="brand" href="{{ url_for('loggedIn') }}">
+        <span class="brand-star">★</span>
+        <span>Starcourt</span>
+      </a>
+
+        <div class="header-right">
+            <a href="{{ url_for('loggedIn') }}">Continue Shopping</a>
+            <a href="{{url_for('myOrders')}}">My Orders</a>
+        </div>
+    </header>
+
+    <main class="cart-container">
+
+        <h1>My Cart</h1>
+
+        {% if cart_items %}
+
+            <div class="cart-list">
+
+                {% for cart, product in cart_items %}
+
+                <div class="cart-item">
+
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+
+                    <div class="cart-info">
+                        <h2>{{ product.name }}</h2>
+                        <p>{{ product.category }}</p>
+                        <p>₹{{ product.price }} / {{ product.unit }}</p>
+                    </div>
+
+                    <div class="quantity">
+
+    <form action="{{ url_for('updateCart', cart_id=cart.id, action='increase') }}" method="POST">
+        <button type="submit">+</button>
+    </form>
+
+    <span>{{ cart.quantity }}</span>
+
+    <form action="{{ url_for('updateCart', cart_id=cart.id, action='decrease') }}" method="POST">
+        <button type="submit">-</button>
+    </form>
+
+</div>
+
+<form action="{{ url_for('deleteCart', cart_id=cart.id) }}" method="POST">
+    <button type="submit" class="delete-button">🗑️</button>
+</form>
+
+                    <strong class="item-total">
+                        ₹{{ product.price * cart.quantity }}
+                    </strong>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+            <div class="cart-summary">
+
+    {% set ns = namespace(total=0) %}
+
+{% for cart, product in cart_items %}
+    {% set ns.total = ns.total + (product.price * cart.quantity) %}
+{% endfor %}
+
+<h2>Total: ₹{{ ns.total }}</h2>
+
+    <form action="{{ url_for('submitOrder') }}" method="POST">
+        <button type="submit" class="submit-order-button">
+            Submit Order
+        </button>
+    </form>
+
+</div>
+
+        {% else %}
+
+            <p class="empty-cart">Your cart is empty.</p>
+
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

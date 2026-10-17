@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Submitted</title>
+    <link rel="stylesheet" href="../static/orderSubmitted.css">
+</head>
+<body>
+
+    <main class="success-container">
+
+        <div class="celebration">🎉</div>
+
+        <div class="check-mark">✓</div>
+
+        <h1>Order Submitted!</h1>
+
+        <p>Your order has been placed successfully.</p>
+
+        <div class="order-number">
+            Order Number
+            <strong>{{ order_number }}</strong>
+        </div>
+
+        <div class="actions">
+            <a href="{{ url_for('myOrders') }}">My Orders</a>
+            <a href="{{ url_for('loggedIn') }}">Continue Shopping</a>
+        </div>
+
+    </main>
+
+</body>
+</html>
