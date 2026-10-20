@@ -1,0 +1,28 @@
+
+# Terraform local working files
+**/.terraform/*
+
+# State files and backups
+*.tfstate
+*.tfstate.*
+terraform-state-backup.json
+*.backup
+
+# Variable files that may contain secrets
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Saved Terraform plans
+*.tfplan
+tfplan
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Credentials and private keys
+.env
+*.pem
+*.key
+credentials
